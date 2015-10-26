@@ -6,6 +6,7 @@
 - chích xuất được kiểu hành động ra thành dữ liệu.
 - ghép vào extension.
 - (chưa nghĩ đc thêm)
+
 ## các chức năng:
 - scroll
 - chuyển tab, new tab, close tab
