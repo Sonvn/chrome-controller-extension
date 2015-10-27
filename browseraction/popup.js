@@ -13,7 +13,14 @@ var actions = {
 	},
 	browseHistory: {
 		nameMess: "browse-history"
+	},
+	previousTab: {
+		nameMess: "previous-tab"
+	},
+	nextTab: {
+		nameMess: "next-tab"
 	}
+
 };
 
 window.onload = function() {

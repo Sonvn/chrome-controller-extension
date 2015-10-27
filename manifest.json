@@ -15,7 +15,7 @@
   },
 
   "background": {
-    "scripts": ["background/background.js"],
+    "scripts": ["background/background.js", "common/lodash.min.js"],
     "persistent": false
   },
 
