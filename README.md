@@ -9,7 +9,17 @@
 
 ## các chức năng:
 - scroll
-- chuyển tab, new tab, close tab
+- chuyển tab, new tab, close tab (xong demo)
 - zoom
-- browser history
+- browser history (xong demo)
 - cho tùy chọn 1 số chức năng khác (vd: mở nhanh google.com, ...)
+- option page
+
+## Tham khảo: 
+- http://codepen.io/leapmotion/pens/popular/
+- https://github.com/nischelwitzer/LeapMotion_Fingers
+- https://github.com/grundid/lm-experiments
+- https://github.com/leapmotion/leapjs-plugins
+- https://github.com/stefek99/LeapMotion-A11Y-Hackathon
+- https://github.com/manifestinteractive/leap-motion-chrome-extension
+- https://github.com/AndrewShidel/Chrome-Leap-Tools
