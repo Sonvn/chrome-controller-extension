@@ -60,7 +60,6 @@ function openNewTabwith(url){
 	chrome.tabs.create({url: url});
 }
 
-
 function previousTab(){
 	preProcessTabs(function (tabs, currentTab) {
 		var indexPreTab = currentTab.index > 0 ? currentTab.index - 1 : tabs.length - 1;
