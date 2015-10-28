@@ -26,6 +26,8 @@
     }
   ],
 
+  "options_page": "option-page/option.html",
+
   "permissions": [
     "activeTab",
     "tabs",

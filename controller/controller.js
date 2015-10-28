@@ -8,7 +8,7 @@ function preProcessTabs(func) {
     }
 }
 
-function openNewTabwith(url) {
+function openNewTabWith(url) {
     chrome.tabs.create({url: url});
 }
 
@@ -49,6 +49,11 @@ var actions = {
             chrome.tabs.create({}, function () {});
         }
     },
+    newTabWithUrl: {
+        exec: function (url) {
+            openNewTabWith(url);
+        }
+    },
     previousTab: {
         exec: function previousTab() {
             preProcessTabs(function (tabs, currentTab) {
@@ -83,22 +88,22 @@ var actions = {
     },
     browseHistory: {
         exec: function browseHistory() {
-            openNewTabwith("chrome://history/");
+            openNewTabWith("chrome://history/");
         }
     },
     openSettings: {
         exec: function openSettings() {
-            openNewTabwith("chrome://settings/");
+            openNewTabWith("chrome://settings/");
         }
     },
     openExtensions: {
         exec: function openExtensions() {
-            openNewTabwith("chrome://extensions/");
+            openNewTabWith("chrome://extensions/");
         }
     },
     openDownloads: {
         exec: function openDownloads() {
-            openNewTabwith("chrome://downloads/");
+            openNewTabWith("chrome://downloads/");
         }
     }
 
