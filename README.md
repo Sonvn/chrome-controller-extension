@@ -10,7 +10,7 @@
 ## các chức năng:
 - scroll
 - chuyển tab, new tab, close tab (xong demo)
-- zoom
+- zoom (xong demo)
 - browser history (xong demo)
 - cho tùy chọn 1 số chức năng khác (vd: mở nhanh google.com, ...)
 - option page

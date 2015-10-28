@@ -11,11 +11,11 @@
       "38": "icons/38x38.png"
     },
     "default_title": "Chrome controller extension",
-    "default_popup": "browseraction/popup.html"
+    "default_popup": "browser-action/popup.html"
   },
 
   "background": {
-    "scripts": ["background/background.js", "common/lodash.min.js"],
+    "scripts": ["background/background.js", "controller/controller.js"],
     "persistent": false
   },
 
@@ -35,5 +35,5 @@
     "storage"
   ],
 
-  "devtools_page": "devtools/devtools.html"
+  "devtools_page": "dev-tools/dev-tools.html"
 }
