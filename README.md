@@ -20,7 +20,6 @@
 - https://github.com/nischelwitzer/LeapMotion_Fingers
 - https://github.com/grundid/lm-experiments
 - https://github.com/leapmotion/leapjs-plugins
-- https://github.com/stefek99/LeapMotion-A11Y-Hackathon
 - https://github.com/manifestinteractive/leap-motion-chrome-extension
 - https://github.com/AndrewShidel/Chrome-Leap-Tools
 - https://github.com/pablitar/VaultForChrome
