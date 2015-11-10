@@ -23,3 +23,4 @@
 - https://github.com/stefek99/LeapMotion-A11Y-Hackathon
 - https://github.com/manifestinteractive/leap-motion-chrome-extension
 - https://github.com/AndrewShidel/Chrome-Leap-Tools
+- https://github.com/pablitar/VaultForChrome
