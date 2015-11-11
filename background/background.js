@@ -23,7 +23,7 @@ chrome.extension.onMessage.addListener(function (request, sender, sendResponse) 
 
 var controller = new Leap.Controller({enableGestures: true})
     .use('screenPosition', {
-        scale: 8
+        scale: 0.1
     })
     .connect()
     .on('frame', function (frame) {
@@ -31,6 +31,7 @@ var controller = new Leap.Controller({enableGestures: true})
         isChromeUrl()
             .then(function (tab_id) {
                 actions.scroll.exec(frame, tab_id);
+                actions.zoom.exec(frame, tab_id);
 
                 //if(frame.valid && frame.gestures.length > 0){
                 //    frame.gestures.forEach(function(gesture){

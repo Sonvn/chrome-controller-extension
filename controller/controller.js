@@ -2,10 +2,15 @@ var X = 0;
 var Y = 1;
 var Z = 2;
 
-var isPinched = false;
+var pinch = {
+    isPinched: false,
+    prevPinch: false,
+    doingPinch: false
+};
 
-var setPinch = function (aHand) {
-    isPinched = aHand.pinchStrength > 0.65;
+var z = {
+    prevFrame: 0,
+    currentFrame: 0
 };
 
 var config = {
@@ -21,6 +26,29 @@ var config = {
     tabSwitchInterval : 500000,
     enableSwipeGestures : true
 };
+
+function throttle(fn, threshhold, scope) {
+    threshhold || (threshhold = 250);
+    var last,
+        deferTimer;
+    return function () {
+        var context = scope || this;
+
+        var now = +new Date,
+            args = arguments;
+        if (last && now < last + threshhold) {
+            // hold on to it
+            clearTimeout(deferTimer);
+            deferTimer = setTimeout(function () {
+                last = now;
+                fn.apply(context, args);
+            }, threshhold);
+        } else {
+            last = now;
+            fn.apply(context, args);
+        }
+    };
+}
 
 function preProcessTabs(func) {
     if (func) {
@@ -60,9 +88,10 @@ function getNumExtendedFingers (frame) {
     return extenders;
 }
 
+// TODO: need refactor this
 function getOneHandWithCustomFingers(frame, numFingers) {
     return new Promise(function (resolve, reject) {
-        if (frame.hands && frame.hands.length == 1 && getNumExtendedFingers(frame) >= numFingers) {
+        if (frame.hands && frame.hands.length == 1 && getNumExtendedFingers(frame) == numFingers) {
             resolve(frame.hands[0]);
         } else {
             reject();
@@ -73,8 +102,7 @@ function getOneHandWithCustomFingers(frame, numFingers) {
 function zoomFunc(new_zoomFactor) {
     chrome.tabs.getSelected(function (tab) {
         chrome.tabs.getZoom(tab.id, function (zoomFactor) {
-            zoomFactor >= 0.3 && zoomFactor <= 5.0 ? chrome.tabs.setZoom(tab.id, zoomFactor + new_zoomFactor, function (tab) {
-            }) : '';
+            chrome.tabs.setZoom(tab.id, zoomFactor + new_zoomFactor, function (tab) {});
         });
     });
 }
@@ -92,7 +120,31 @@ var actions = {
     },
     zoom: {
         exec: function (frame, tab_id) {
-            setPinch()
+            var setPinch = function (aHand) {
+                pinch.prevPinch = pinch.isPinched;
+                pinch.isPinched = aHand.pinchStrength > 0.9;
+
+                if(pinch.prevPinch != pinch.isPinched) {
+                    pinch.doingPinch = !pinch.doingPinch;
+                }
+            };
+
+            if (frame.hands && frame.hands.length == 1) {
+                var hand = frame.hands[0];
+                setPinch(hand);
+                if(pinch.isPinched) {
+                    var zPosition = hand.screenPosition()[Z];
+                    z.prevFrame = pinch.prevPinch != pinch.isPinched ? zPosition : z.currentFrame;
+                    z.currentFrame = zPosition;
+                    var diff = (z.currentFrame - z.prevFrame).toPrecision(1) * 0.05;
+                    if(Math.abs(diff) >= 0.02 && Math.abs(diff) < 0.05) {
+                        console.log(diff);
+                        throttle(function () {
+                            zoomFunc(diff > 0 ? 0.01 : -0.01);
+                        }, 2000)();
+                    }
+                }
+            }
         }
     },
     scroll: {
