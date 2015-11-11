@@ -23,3 +23,4 @@
 - https://github.com/manifestinteractive/leap-motion-chrome-extension
 - https://github.com/AndrewShidel/Chrome-Leap-Tools
 - https://github.com/pablitar/VaultForChrome
+- http://leapmotion.github.io/leapjs-plugins/docs/

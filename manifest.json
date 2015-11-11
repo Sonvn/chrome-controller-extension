@@ -3,20 +3,20 @@
   "version": "0.0.1",
   "manifest_version": 2,
   "description" : "Description ...",
-  "icons": { "16": "icons/icon_16.png", "48": "icons/icon_48.png", "128": "icons/icon_128.png" },
+  "icons": { "16": "assets/icons/icon_16.png", "48": "assets/icons/icon_48.png", "128": "assets/icons/icon_128.png" },
 
   "browser_action": {
     "default_icon": {
-      "19": "icons/icon_19.png",
-      "38": "icons/icon_38.png"
+      "19": "assets/icons/icon_19.png",
+      "38": "assets/icons/icon_38.png"
     },
     "default_title": "Chrome controller extension",
     "default_popup": "browser-action/popup.html"
   },
 
   "background": {
-    "scripts": ["background/background.js", "controller/controller.js"],
-    "persistent": false
+    "page": "background/background.html",
+    "persistent": true
   },
 
   "content_scripts": [
@@ -35,7 +35,5 @@
     "https://*/",
     "<all_urls>",
     "storage"
-  ],
-
-  "devtools_page": "dev-tools/dev-tools.html"
+  ]
 }
