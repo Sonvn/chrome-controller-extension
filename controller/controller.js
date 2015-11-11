@@ -108,16 +108,6 @@ function zoomFunc(new_zoomFactor) {
 }
 
 var actions = {
-    zoomIn: {
-        exec: function zoomIn() {
-            zoomFunc(-0.05);
-        }
-    },
-    zoomOut: {
-        exec: function zoomOut() {
-            zoomFunc(0.05);
-        }
-    },
     zoom: {
         exec: function (frame, tab_id) {
             var setPinch = function (aHand) {
@@ -193,6 +183,11 @@ var actions = {
             chrome.tabs.create({}, function () {});
         }
     },
+    newTabWithUrl: {
+        exec: function (url) {
+            openNewTabWith(url);
+        }
+    },
     previousTab: {
         exec: function previousTab() {
             preProcessTabs(function (tabs, currentTab) {
@@ -211,20 +206,20 @@ var actions = {
             })
         }
     },
-    historyForward: {
-        exec: function historyForward() {
-            chrome.tabs.executeScript({
-                code: 'history.forward()'
-            });
-        }
-    },
-    historyBack: {
-        exec: function historyBack() {
-            chrome.tabs.executeScript({
-                code: 'history.back()'
-            });
-        }
-    },
+    //historyForward: {
+    //    exec: function historyForward() {
+    //        chrome.tabs.executeScript({
+    //            code: 'history.forward()'
+    //        });
+    //    }
+    //},
+    //historyBack: {
+    //    exec: function historyBack() {
+    //        chrome.tabs.executeScript({
+    //            code: 'history.back()'
+    //        });
+    //    }
+    //},
     openExtensions: {
         exec: function openExtensions() {
             openNewTabWith("chrome://extensions/");
