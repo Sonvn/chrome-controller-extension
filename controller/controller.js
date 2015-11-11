@@ -2,10 +2,16 @@ var X = 0;
 var Y = 1;
 var Z = 2;
 
+var isPinched = false;
+
+var setPinch = function (aHand) {
+    isPinched = aHand.pinchStrength > 0.65;
+};
+
 var config = {
     speed : 10,
     xCalibration : 0.2,
-    yCalibration : -0.4,
+    yCalibration : 0.0,
     minUpdateInterval : 0.017,
     enableVerticalScroll : true,
     enableHorizontalScroll : true,
@@ -31,17 +37,15 @@ function openNewTabWith(url) {
 }
 
 function isChromeUrl () {
-    var promise = new Promise(
-        function(resolve, reject) {
-            chrome.tabs.getSelected(function (tab) {
-                if(tab.url.indexOf("chrome://") > -1 || tab.url.indexOf("chrome-extension://") > -1 || tab.url.indexOf("chrome-devtools://") > -1) {
-                    reject();
-                } else {
-                    resolve(tab.id);
-                }
-            });
+    return new Promise(function (resolve, reject) {
+        chrome.tabs.getSelected(function (tab) {
+            if (tab.url.indexOf("chrome://") > -1 || tab.url.indexOf("chrome-extension://") > -1 || tab.url.indexOf("chrome-devtools://") > -1) {
+                reject();
+            } else {
+                resolve(tab.id);
+            }
         });
-    return promise;
+    });
 }
 
 function getNumExtendedFingers (frame) {
@@ -56,25 +60,39 @@ function getNumExtendedFingers (frame) {
     return extenders;
 }
 
+function getOneHandWithCustomFingers(frame, numFingers) {
+    return new Promise(function (resolve, reject) {
+        if (frame.hands && frame.hands.length == 1 && getNumExtendedFingers(frame) >= numFingers) {
+            resolve(frame.hands[0]);
+        } else {
+            reject();
+        }
+    });
+}
+
+function zoomFunc(new_zoomFactor) {
+    chrome.tabs.getSelected(function (tab) {
+        chrome.tabs.getZoom(tab.id, function (zoomFactor) {
+            zoomFactor >= 0.3 && zoomFactor <= 5.0 ? chrome.tabs.setZoom(tab.id, zoomFactor + new_zoomFactor, function (tab) {
+            }) : '';
+        });
+    });
+}
+
 var actions = {
     zoomIn: {
         exec: function zoomIn() {
-            chrome.tabs.getSelected(function (tab) {
-                chrome.tabs.getZoom(tab.id, function (zoomFactor) {
-                    zoomFactor >= 0.3 ? chrome.tabs.setZoom(tab.id, zoomFactor - 0.05, function (tab) {
-                    }) : '';
-                });
-            });
+            zoomFunc(-0.05);
         }
     },
     zoomOut: {
         exec: function zoomOut() {
-            chrome.tabs.getSelected(function (tab) {
-                chrome.tabs.getZoom(tab.id, function (zoomFactor) {
-                    zoomFactor <= 5.0 ? chrome.tabs.setZoom(tab.id, zoomFactor + 0.05, function (tab) {
-                    }) : '';
-                });
-            });
+            zoomFunc(0.05);
+        }
+    },
+    zoom: {
+        exec: function (frame, tab_id) {
+            setPinch()
         }
     },
     scroll: {
@@ -87,7 +105,7 @@ var actions = {
                 return enabled ? Math.pow(Math.abs(axisValue) + 1, 4) : 0;
             }
 
-            console.log(getNumExtendedFingers(frame));
+            //console.log(getNumExtendedFingers(frame));
 
             if (frame.hands && frame.hands.length == 1 && getNumExtendedFingers(frame) >= 4) {
                 var aHand = frame.hands[0];
@@ -95,13 +113,14 @@ var actions = {
                 var x = axisValue(aHand.palmNormal[X], config.xCalibration, config.invertHorizontalScroll);
                 var y = axisValue(aHand.palmNormal[Z], config.yCalibration, config.invertVerticalScroll);
 
-                var speedFactorX = speedFactor(config.enableHorizontalScroll, x);
-                var speedFactorY = speedFactor(config.enableVerticalScroll, y);
+                var lengthX = speedFactor(config.enableHorizontalScroll, x) * x * config.speed;
+                var lengthY = speedFactor(config.enableVerticalScroll, y) * y * config.speed;
 
-                var delta = config.speed;
+                lengthX = Math.abs(lengthX) > 1 ? lengthX : 0;
+                lengthY = Math.abs(lengthY) > 2 ? lengthY : 0;
 
                 chrome.tabs.executeScript(tab_id, {
-                    code: "window.scrollBy(" + x * speedFactorX * delta + ", " + y * speedFactorY * delta + ");"
+                    code: "window.scrollBy(" + lengthX + ", " + lengthY + ");"
                 }, function () {});
             }
         }
@@ -120,11 +139,6 @@ var actions = {
     newTab: {
         exec: function openNewTab() {
             chrome.tabs.create({}, function () {});
-        }
-    },
-    newTabWithUrl: {
-        exec: function (url) {
-            openNewTabWith(url);
         }
     },
     previousTab: {
@@ -159,24 +173,9 @@ var actions = {
             });
         }
     },
-    browseHistory: {
-        exec: function browseHistory() {
-            openNewTabWith("chrome://history/");
-        }
-    },
-    openSettings: {
-        exec: function openSettings() {
-            openNewTabWith("chrome://settings/");
-        }
-    },
     openExtensions: {
         exec: function openExtensions() {
             openNewTabWith("chrome://extensions/");
-        }
-    },
-    openDownloads: {
-        exec: function openDownloads() {
-            openNewTabWith("chrome://downloads/");
         }
     }
 };
