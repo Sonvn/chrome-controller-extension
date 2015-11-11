@@ -100,6 +100,7 @@ function getOneHandWithCustomFingers(frame, numFingers) {
 }
 
 function zoomFunc(new_zoomFactor) {
+
     chrome.tabs.getSelected(function (tab) {
         chrome.tabs.getZoom(tab.id, function (zoomFactor) {
             chrome.tabs.setZoom(tab.id, zoomFactor + new_zoomFactor, function (tab) {});
@@ -110,6 +111,7 @@ function zoomFunc(new_zoomFactor) {
 var actions = {
     zoom: {
         exec: function (frame, tab_id) {
+
             var setPinch = function (aHand) {
                 pinch.prevPinch = pinch.isPinched;
                 pinch.isPinched = aHand.pinchStrength > 0.9;
@@ -128,9 +130,14 @@ var actions = {
                     z.currentFrame = zPosition;
                     var diff = (z.currentFrame - z.prevFrame).toPrecision(1) * 0.05;
                     if(Math.abs(diff) >= 0.02 && Math.abs(diff) < 0.05) {
-                        console.log(diff);
                         throttle(function () {
-                            zoomFunc(diff > 0 ? 0.01 : -0.01);
+                            chrome.tabs.executeScript(tab_id, {
+                                code: "document.getElementsByTagName('BODY')[0].style.zoom"
+                            }, function (args) {
+                                var currentZoom = diff > 0 ? parseFloat(args[0]) + 1 : parseFloat(args[0]) - 1;
+                                console.log(currentZoom);
+                                chrome.tabs.sendMessage(tab_id, {type: "zoom-page", value: currentZoom + "%"});
+                            });
                         }, 2000)();
                     }
                 }
