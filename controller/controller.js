@@ -15,7 +15,7 @@ var z = {
 
 var config = {
     speed : 10,
-    xCalibration : 0.2,
+    xCalibration : 0.0,
     yCalibration : 0.0,
     minUpdateInterval : 0.017,
     enableVerticalScroll : true,
@@ -114,7 +114,7 @@ var actions = {
 
             var setPinch = function (aHand) {
                 pinch.prevPinch = pinch.isPinched;
-                pinch.isPinched = aHand.pinchStrength > 0.9;
+                pinch.isPinched = aHand.grabStrength > 0.95;
 
                 if(pinch.prevPinch != pinch.isPinched) {
                     pinch.doingPinch = !pinch.doingPinch;
@@ -134,8 +134,7 @@ var actions = {
                             chrome.tabs.executeScript(tab_id, {
                                 code: "document.getElementsByTagName('BODY')[0].style.zoom"
                             }, function (args) {
-                                var currentZoom = diff > 0 ? parseFloat(args[0]) + 1 : parseFloat(args[0]) - 1;
-                                console.log(currentZoom);
+                                var currentZoom = diff > 0 ? parseFloat(args[0]) + 2 : parseFloat(args[0]) - 2;
                                 chrome.tabs.sendMessage(tab_id, {type: "zoom-page", value: currentZoom + "%"});
                             });
                         }, 2000)();
@@ -153,8 +152,6 @@ var actions = {
             function speedFactor(enabled, axisValue) {
                 return enabled ? Math.pow(Math.abs(axisValue) + 1, 4) : 0;
             }
-
-            //console.log(getNumExtendedFingers(frame));
 
             if (frame.hands && frame.hands.length == 1 && getNumExtendedFingers(frame) == 5) {
                 var aHand = frame.hands[0];

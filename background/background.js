@@ -45,7 +45,7 @@ var controller = new Leap.Controller({enableGestures: true})
                                 var direction = frame.pointable(pointableID).direction;
                                 var dotProduct = Leap.vec3.dot(direction, gesture.normal);
 
-                                if (dotProduct > 0) {
+                                if (dotProduct > 0 && getNumExtendedFingers(frame) == 1) {
                                     actions.historyForward.exec();
                                 } else {
                                     actions.historyBack.exec();
@@ -62,8 +62,7 @@ var controller = new Leap.Controller({enableGestures: true})
 
                                 //Classify swipe as either horizontal or vertical
                                 var isHorizontal = Math.abs(gesture.direction[0]) > Math.abs(gesture.direction[1]);
-                                //Classify as right-left or up-down
-                                if (isHorizontal) {
+                                if (isHorizontal && getNumExtendedFingers(frame) == 1) {
                                     if (gesture.direction[0] > 0) {
                                         swipeDirection = "right";
                                         actions.nextTab.exec();
@@ -72,19 +71,21 @@ var controller = new Leap.Controller({enableGestures: true})
                                         actions.previousTab.exec();
 
                                     }
-                                } else { //vertical
+                                } else {
                                     if (gesture.direction[1] > 0) {
                                         swipeDirection = "up";
-                                        actions.newTab.exec();
+                                        getNumExtendedFingers(frame) == 2 ? actions.newTab.exec() : '';
                                     } else {
                                         swipeDirection = "down";
-                                        if (getNumExtendedFingers(frame) == 1) {
+                                        if (getNumExtendedFingers(frame) == 2) {
                                             actions.closeTab.exec();
-                                        } else {
+                                        } else if (getNumExtendedFingers(frame) == 3) {
                                             actions.reloadTab.exec();
                                         }
                                     }
                                 }
+
+                                console.log(swipeDirection);
                                 break;
                         }
                     });
