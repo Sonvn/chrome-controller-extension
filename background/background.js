@@ -6,7 +6,7 @@ chrome.extension.onMessage.addListener(function (request, sender, sendResponse) 
 
 var controller = new Leap.Controller({enableGestures: true})
     .use('screenPosition', {
-        scale: 0.1
+        scale: 1
     })
     .connect()
     .on('frame', function (frame) {
@@ -19,17 +19,17 @@ var controller = new Leap.Controller({enableGestures: true})
 
                 if (frame.valid && frame.gestures.length > 0) {
                     frame.gestures.forEach(function (gesture) {
-                        if (gesture.state == "stop") switch (gesture.type) {
+                        if (gesture.state == "stop" && frame.hands && frame.hands.length == 1) switch (gesture.type) {
                             case "circle":
-                                var clockwise = false;
-                                var pointableID = gesture.pointableIds[0];
-                                var direction = frame.pointable(pointableID).direction;
-                                var dotProduct = Leap.vec3.dot(direction, gesture.normal);
-                                if (dotProduct > 0 && getNumExtendedFingers(frame) == 1) {
-                                    actions.historyForward.exec();
-                                } else {
-                                    actions.historyBack.exec();
-                                }
+                                //var clockwise = false;
+                                //var pointableID = gesture.pointableIds[0];
+                                //var direction = frame.pointable(pointableID).direction;
+                                //var dotProduct = Leap.vec3.dot(direction, gesture.normal);
+                                //if (dotProduct > 0 && getNumExtendedFingers(frame) == 1) {
+                                //    actions.historyForward.exec();
+                                //} else {
+                                //    actions.historyBack.exec();
+                                //}
                                 break;
                             case "keyTap":
                                 break;
