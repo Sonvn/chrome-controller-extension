@@ -94,13 +94,13 @@ var controller = new Leap.Controller({enableGestures: true})
 
         var hand = frame.hands[0];
 
-        if (hand && hand.middleFinger.extended
-            && !hand.thumb.extended
-            && !hand.indexFinger.extended
-            && !hand.ringFinger.extended
-            && !hand.pinky.extended) {
-            alert("FUCK YOU");
-        }
+        //if (hand && hand.middleFinger.extended
+        //    && !hand.thumb.extended
+        //    && !hand.indexFinger.extended
+        //    && !hand.ringFinger.extended
+        //    && !hand.pinky.extended) {
+        //    alert("FUCK YOU");
+        //}
 
         if (frame.valid && frame.gestures.length > 0) {
             frame.gestures.forEach(function (gesture) {
