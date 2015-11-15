@@ -2,6 +2,7 @@ var finger_size = 32;
 var width = window.innerWidth;
 var height = window.innerHeight;
 var $indexFinger;
+var currentElem;
 
 window.onload = function () {
     document.getElementsByTagName("BODY")[0].style.zoom = "100%";
@@ -30,7 +31,8 @@ function highlightLinkElem(pos) {
         });
     }
     var elem = document.elementFromPoint(pos.left, pos.top);
-    if($(elem).is("a")) {
+    if($(elem).is("a") || $(elem).is("button")) {
+        currentElem = elem;
         setHighlight(elem);
         $previousElem = elem;
     }
@@ -88,4 +90,16 @@ var controller = new Leap.Controller({enableGestures: true})
         var scale = (frame.hands.length > 0 && frame.hands[0]._scaleFactor !== 'undefined') ? frame.hands[0]._scaleFactor : 1;
         var pos = update_fingers(scale, frame);
         highlightLinkElem(pos);
+
+        if (frame.valid && frame.gestures.length > 0) {
+            frame.gestures.forEach(function (gesture) {
+                if (gesture.state == "stop" && frame.hands && frame.hands.length == 1) switch (gesture.type) {
+                    case "keyTap":
+                        console.log("FUCK HUY ");
+                        console.log(currentElem);
+                        if (currentElem) $(currentElem)[0].click();
+                        break;
+                }
+            });
+        }
     });

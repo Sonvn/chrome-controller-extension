@@ -21,15 +21,17 @@ var controller = new Leap.Controller({enableGestures: true})
                     frame.gestures.forEach(function (gesture) {
                         if (gesture.state == "stop" && frame.hands && frame.hands.length == 1) switch (gesture.type) {
                             case "circle":
-                                //var clockwise = false;
-                                //var pointableID = gesture.pointableIds[0];
-                                //var direction = frame.pointable(pointableID).direction;
-                                //var dotProduct = Leap.vec3.dot(direction, gesture.normal);
-                                //if (dotProduct > 0 && getNumExtendedFingers(frame) == 1) {
-                                //    actions.historyForward.exec();
-                                //} else {
-                                //    actions.historyBack.exec();
-                                //}
+                                if (getNumExtendedFingers(frame) == 2) {
+                                    var clockwise = false;
+                                    var pointableID = gesture.pointableIds[0];
+                                    var direction = frame.pointable(pointableID).direction;
+                                    var dotProduct = Leap.vec3.dot(direction, gesture.normal);
+                                    if (dotProduct > 0 && getNumExtendedFingers(frame) == 1) {
+                                        actions.historyForward.exec();
+                                    } else {
+                                        actions.historyBack.exec();
+                                    }
+                                }
                                 break;
                             case "keyTap":
                                 break;
