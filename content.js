@@ -49,11 +49,12 @@ function add_finger() {
         'transition': 'opacity 0.15s ease',
         '-webkit-box-sizing': 'border-box',
         'box-sizing': 'border-box',
-        'transform': 'translate3d(0,0,0)'
+        'transform': 'translate3d(0,0,0)',
+        'display': 'none'
     });
 }
 
-function update_fingers(scale, frame) {
+function update_finger(scale, frame) {
     var pos = {};
     if (frame.hands[0] && frame.hands[0].indexFinger.extended) {
         var top = height - 4 * frame.hands[0].indexFinger.tipPosition[1] + 150;
@@ -63,11 +64,16 @@ function update_fingers(scale, frame) {
         pos.left = left;
 
         $indexFinger.css({
+            'display': 'block',
             'top': 0,
             'left': 0,
             'position': 'fixed',
             'transform': 'translate3d(' + left.toFixed(2) + 'px, ' + top.toFixed(2) + 'px, 0)',
             'opacity': '0.75'
+        });
+    } else {
+        $indexFinger.css({
+            'display': 'none'
         });
     }
     return pos;
@@ -84,7 +90,8 @@ var controller = new Leap.Controller({enableGestures: true})
         var hand = frame.hands[0];
 
         actions.scroll(frame);
-        if (hand && !hand.indexFinger.extended) {
+        if (hand && !hand.indexFinger.extended
+            && !hand.pinky.extended) {
             actions.zoom(frame);
         }
 
@@ -124,7 +131,7 @@ var controller = new Leap.Controller({enableGestures: true})
             && !hand.ringFinger.extended
             && !hand.pinky.extended) {
             var scale = (frame.hands.length > 0 && frame.hands[0]._scaleFactor !== 'undefined') ? frame.hands[0]._scaleFactor : 1;
-            var pos = update_fingers(scale, frame);
+            var pos = update_finger(scale, frame);
             highlightLinkElem(pos);
 
             if (frame.valid && frame.gestures.length > 0) {

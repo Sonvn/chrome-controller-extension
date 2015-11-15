@@ -1,21 +1,56 @@
-<script type="text/javascript" src="popup.js"></script>
-<script type="text/javascript" src="../controller/controller.js"></script>
-<div style="width:200px">
-	<button id="newTab">Open new tab</button>
-	<br/>
-	<button id="closeTab">Close current tab</button>
-	<br/>
-	<button id="nextTab">NextTab</button>
-	<br/>
-	<button id="previousTab">previous Tab</button>
-	<br/>
-	<!--<button id="historyBack">historyBack</button>-->
-	<!--<br/>-->
-	<!--<button id="historyForward">historyForward</button>-->
-	<!--<br/>-->
-	<button id="openExtensions">openExtensions</button>
-	<br/>
-	<button id="openOptionPage">openOptionPage</button>
-	<br/>
+<!doctype html>
+<html>
+<head>
+	<title>Leap Motion Controller</title>
 
-</div>
+	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700,600,300,800" />
+	<style>
+		body {
+			min-width: 400px;
+			overflow-x: hidden;
+			font-family: 'Open Sans', sans-serif;
+			padding: 10px;
+			margin: 0;
+		}
+		h1 {
+			background: url('img/icon_38.png') center left no-repeat;
+			height: 38px;
+			line-height: 38px;
+			font-size: 24px;
+			color: #666;
+			margin: 0;
+			padding: 0;
+			font-weight: normal;
+			/*text-align: center;*/
+		}
+		p {
+			/*text-align: center;*/
+			margin: 0;
+			padding: 0;
+			line-height: 30px;
+		}
+		a {
+			text-decoration: none;
+			color: #9ac847;
+			outline: none;
+		}
+		a:hover {
+			text-decoration: underline;
+		}
+	</style>
+	<script src="popup.js"></script>
+</head>
+<body>
+<h1>Guide</h1>
+
+<!--<p>Update Settings on <a id="opts_link" href="#" target="_blank">Options Page</a></p>-->
+<p style="color: #CCC;">click to icon when to see the guide</p>
+<p>Using only one finger and swipe left/right to move previous/next tab</p>
+<p>Using 2 fingers and swipe up/down to open new/close tab</p>
+<p>Using 2 fingers and swipe left/ right to move previous/next tab</p>
+<p>Using 3 fingers and swipe down to reload tab</p>
+<p>Using 2 fingers and swipe circle/counter-clockwise with one finger to forward/backward history</p>
+<p>Scroll with open hand</p>
+<p>Zoom with grab hand</p>
+</body>
+</html>
