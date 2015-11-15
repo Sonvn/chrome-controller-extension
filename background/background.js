@@ -38,26 +38,24 @@ var controller = new Leap.Controller({enableGestures: true})
 
                 if (frame.valid && frame.gestures.length > 0) {
                     frame.gestures.forEach(function (gesture) {
-                        switch (gesture.type) {
+                        if (gesture.state == "stop") switch (gesture.type) {
                             case "circle":
-                                if (gesture.state == "stop") {
-                                    var clockwise = false;
-                                    var pointableID = gesture.pointableIds[0];
-                                    var direction = frame.pointable(pointableID).direction;
-                                    var dotProduct = Leap.vec3.dot(direction, gesture.normal);
+                                var clockwise = false;
+                                var pointableID = gesture.pointableIds[0];
+                                var direction = frame.pointable(pointableID).direction;
+                                var dotProduct = Leap.vec3.dot(direction, gesture.normal);
 
-                                    if (dotProduct  >  0) {
-                                        actions.historyForward.exec();
-                                    } else {
-                                        actions.historyBack.exec();
-                                    }
+                                if (dotProduct > 0) {
+                                    actions.historyForward.exec();
+                                } else {
+                                    actions.historyBack.exec();
                                 }
+
                                 break;
                             case "keyTap":
                                 //console.log("Key Tap Gesture");
                                 break;
                             case "screenTap":
-                                //console.log("Screen Tap Gesture");
                                 break;
                             case "swipe":
                                 //console.log("Swipe Gesture");
@@ -68,22 +66,25 @@ var controller = new Leap.Controller({enableGestures: true})
                                 if (isHorizontal) {
                                     if (gesture.direction[0] > 0) {
                                         swipeDirection = "right";
-                                        if (gesture.state == "stop") actions.nextTab.exec();
+                                        actions.nextTab.exec();
                                     } else {
                                         swipeDirection = "left";
-                                        if (gesture.state == "stop") actions.previousTab.exec();
+                                        actions.previousTab.exec();
 
                                     }
                                 } else { //vertical
                                     if (gesture.direction[1] > 0) {
                                         swipeDirection = "up";
+                                        actions.newTab.exec();
                                     } else {
                                         swipeDirection = "down";
+                                        if (getNumExtendedFingers(frame) == 1) {
+                                            actions.closeTab.exec();
+                                        } else {
+                                            actions.reloadTab.exec();
+                                        }
                                     }
                                 }
-                                console.log(swipeDirection)
-
-
                                 break;
                         }
                     });

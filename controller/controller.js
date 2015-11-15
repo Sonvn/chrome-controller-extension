@@ -156,7 +156,7 @@ var actions = {
 
             //console.log(getNumExtendedFingers(frame));
 
-            if (frame.hands && frame.hands.length == 1 && getNumExtendedFingers(frame) >= 4) {
+            if (frame.hands && frame.hands.length == 1 && getNumExtendedFingers(frame) == 5) {
                 var aHand = frame.hands[0];
 
                 var x = axisValue(aHand.palmNormal[X], config.xCalibration, config.invertHorizontalScroll);
@@ -209,6 +209,15 @@ var actions = {
             preProcessTabs(function (tabs, currentTab) {
                 var indexNextTab = currentTab.index < tabs.length - 1 ? currentTab.index + 1 : 0;
                 chrome.tabs.highlight({tabs: indexNextTab}, function (tab) {
+                });
+            })
+        }
+    },
+    reloadTab: {
+        exec: function nextTab() {
+            preProcessTabs(function (tabs, currentTab) {
+                var numTabs = tabs.length;
+                chrome.tabs.reload(currentTab.id, function () {
                 });
             })
         }
