@@ -16,6 +16,26 @@ chrome.extension.onMessage.addListener(function (message, sender, sendResponse) 
     }
 });
 
+var $previousElem;
+
+function highlightLinkElem(pos) {
+    var setHighlight = function (elem) {
+        $(elem).css({
+            'border': '2px solid red'
+        });
+    };
+    if($previousElem) {
+        $($previousElem).css({
+            'border': 'none'
+        });
+    }
+    var elem = document.elementFromPoint(pos.left, pos.top);
+    if($(elem).is("a")) {
+        setHighlight(elem);
+        $previousElem = elem;
+    }
+}
+
 function add_finger() {
     $('body').append('<div class="finger" id="indexFinger"><\/div>');
     $indexFinger = $('#indexFinger').css({
@@ -39,9 +59,13 @@ function add_finger() {
 }
 
 function update_fingers(scale, frame) {
+    var pos = {};
     if(frame.hands[0] && frame.hands[0].indexFinger.extended) {
         var top = height - 4*frame.hands[0].indexFinger.tipPosition[1] + 150;
         var left = width/2 + 6*frame.hands[0].indexFinger.tipPosition[0];
+
+        pos.top = top;
+        pos.left = left;
 
         $indexFinger.css({
             'top': 0,
@@ -51,6 +75,8 @@ function update_fingers(scale, frame) {
             'opacity': '0.75'
         });
     }
+
+    return pos;
 }
 
 var controller = new Leap.Controller({enableGestures: true})
@@ -60,5 +86,6 @@ var controller = new Leap.Controller({enableGestures: true})
     .connect()
     .on('frame', function (frame) {
         var scale = (frame.hands.length > 0 && frame.hands[0]._scaleFactor !== 'undefined') ? frame.hands[0]._scaleFactor : 1;
-        update_fingers(scale, frame);
+        var pos = update_fingers(scale, frame);
+        highlightLinkElem(pos);
     });
