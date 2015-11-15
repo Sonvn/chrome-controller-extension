@@ -4,9 +4,10 @@ var height = window.innerHeight;
 var $indexFinger;
 var currentElem;
 
+add_finger();
+
 window.onload = function () {
     document.getElementsByTagName("BODY")[0].style.zoom = "100%";
-    add_finger();
 };
 
 chrome.extension.onMessage.addListener(function (message, sender, sendResponse) {
@@ -25,13 +26,13 @@ function highlightLinkElem(pos) {
             'border': '2px solid red'
         });
     };
-    if($previousElem) {
+    if ($previousElem) {
         $($previousElem).css({
             'border': 'none'
         });
     }
     var elem = document.elementFromPoint(pos.left, pos.top);
-    if($(elem).is("a") || $(elem).is("button")) {
+    if ($(elem).is("a") || $(elem).is("button")) {
         currentElem = elem;
         setHighlight(elem);
         $previousElem = elem;
@@ -62,9 +63,9 @@ function add_finger() {
 
 function update_fingers(scale, frame) {
     var pos = {};
-    if(frame.hands[0] && frame.hands[0].indexFinger.extended) {
-        var top = height - 4*frame.hands[0].indexFinger.tipPosition[1] + 150;
-        var left = width/2 + 6*frame.hands[0].indexFinger.tipPosition[0];
+    if (frame.hands[0] && frame.hands[0].indexFinger.extended) {
+        var top = height - 4 * frame.hands[0].indexFinger.tipPosition[1] + 150;
+        var left = width / 2 + 6 * frame.hands[0].indexFinger.tipPosition[0];
 
         pos.top = top;
         pos.left = left;
@@ -90,6 +91,16 @@ var controller = new Leap.Controller({enableGestures: true})
         var scale = (frame.hands.length > 0 && frame.hands[0]._scaleFactor !== 'undefined') ? frame.hands[0]._scaleFactor : 1;
         var pos = update_fingers(scale, frame);
         highlightLinkElem(pos);
+
+        var hand = frame.hands[0];
+
+        if (hand && hand.middleFinger.extended
+            && !hand.thumb.extended
+            && !hand.indexFinger.extended
+            && !hand.ringFinger.extended
+            && !hand.pinky.extended) {
+            alert("FUCK YOU");
+        }
 
         if (frame.valid && frame.gestures.length > 0) {
             frame.gestures.forEach(function (gesture) {
