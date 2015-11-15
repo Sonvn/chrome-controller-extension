@@ -21,38 +21,75 @@ chrome.extension.onMessage.addListener(function (request, sender, sendResponse) 
 //    console.log(frame);
 //});
 
+
 var controller = new Leap.Controller({enableGestures: true})
     .use('screenPosition', {
         scale: 0.1
     })
     .connect()
+
     .on('frame', function (frame) {
 
         isChromeUrl()
             .then(function (tab_id) {
+
                 actions.scroll.exec(frame, tab_id);
                 actions.zoom.exec(frame, tab_id);
 
-                //if(frame.valid && frame.gestures.length > 0){
-                //    frame.gestures.forEach(function(gesture){
-                //        switch (gesture.type){
-                //            case "circle":
-                //                console.log("Circle Gesture");
-                //                break;
-                //            case "keyTap":
-                //                console.log("Key Tap Gesture");
-                //                break;
-                //            case "screenTap":
-                //                console.log("Screen Tap Gesture");
-                //                break;
-                //            case "swipe":
-                //                console.log("Swipe Gesture");
-                //                break;
-                //        }
-                //    });
-                //}
+                if (frame.valid && frame.gestures.length > 0) {
+                    frame.gestures.forEach(function (gesture) {
+                        switch (gesture.type) {
+                            case "circle":
+                                if (gesture.state == "stop") {
+                                    var clockwise = false;
+                                    var pointableID = gesture.pointableIds[0];
+                                    var direction = frame.pointable(pointableID).direction;
+                                    var dotProduct = Leap.vec3.dot(direction, gesture.normal);
+
+                                    if (dotProduct  >  0) {
+                                        actions.historyForward.exec();
+                                    } else {
+                                        actions.historyBack.exec();
+                                    }
+                                }
+                                break;
+                            case "keyTap":
+                                //console.log("Key Tap Gesture");
+                                break;
+                            case "screenTap":
+                                //console.log("Screen Tap Gesture");
+                                break;
+                            case "swipe":
+                                //console.log("Swipe Gesture");
+
+                                //Classify swipe as either horizontal or vertical
+                                var isHorizontal = Math.abs(gesture.direction[0]) > Math.abs(gesture.direction[1]);
+                                //Classify as right-left or up-down
+                                if (isHorizontal) {
+                                    if (gesture.direction[0] > 0) {
+                                        swipeDirection = "right";
+                                        if (gesture.state == "stop") actions.nextTab.exec();
+                                    } else {
+                                        swipeDirection = "left";
+                                        if (gesture.state == "stop") actions.previousTab.exec();
+
+                                    }
+                                } else { //vertical
+                                    if (gesture.direction[1] > 0) {
+                                        swipeDirection = "up";
+                                    } else {
+                                        swipeDirection = "down";
+                                    }
+                                }
+                                console.log(swipeDirection)
+
+
+                                break;
+                        }
+                    });
+                }
             })
-            .catch(function() {
+            .catch(function () {
             });
 
     });

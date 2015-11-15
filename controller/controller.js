@@ -213,20 +213,20 @@ var actions = {
             })
         }
     },
-    //historyForward: {
-    //    exec: function historyForward() {
-    //        chrome.tabs.executeScript({
-    //            code: 'history.forward()'
-    //        });
-    //    }
-    //},
-    //historyBack: {
-    //    exec: function historyBack() {
-    //        chrome.tabs.executeScript({
-    //            code: 'history.back()'
-    //        });
-    //    }
-    //},
+    historyForward: {
+        exec: function historyForward() {
+            chrome.tabs.executeScript({
+                code: 'history.forward()'
+            });
+        }
+    },
+    historyBack: {
+        exec: function historyBack() {
+            chrome.tabs.executeScript({
+                code: 'history.back()'
+            });
+        }
+    },
     openExtensions: {
         exec: function openExtensions() {
             openNewTabWith("chrome://extensions/");
