@@ -13,3 +13,13 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
     }
 });
 
+
+var controller = new Leap.Controller({enableGestures: true})
+    .use('screenPosition', {
+        scale: 0.1
+    })
+    .connect()
+    .on('frame', function (frame) {
+
+        
+    });

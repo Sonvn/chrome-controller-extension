@@ -67,18 +67,17 @@ function openNewTabWith(url) {
 function isChromeUrl () {
     return new Promise(function (resolve, reject) {
         chrome.tabs.getSelected(function (tab) {
-            if (tab.url.indexOf("chrome://") > -1 || tab.url.indexOf("chrome-extension://") > -1 || tab.url.indexOf("chrome-devtools://") > -1) {
-                reject();
-            } else {
+            //if (tab.url.indexOf("chrome://") > -1 || tab.url.indexOf("chrome-extension://") > -1 || tab.url.indexOf("chrome-devtools://") > -1) {
+            //    reject();
+            //} else {
                 resolve(tab.id);
-            }
+            //}
         });
     });
 }
 
 function getNumExtendedFingers (frame) {
     var extenders = 0;
-
     for (var i = 0; i < frame.pointables.length; i++) {
         var obj = frame.pointables[i];
         if (obj.extended === true) {
@@ -88,25 +87,14 @@ function getNumExtendedFingers (frame) {
     return extenders;
 }
 
-// TODO: need refactor this
-function getOneHandWithCustomFingers(frame, numFingers) {
-    return new Promise(function (resolve, reject) {
-        if (frame.hands && frame.hands.length == 1 && getNumExtendedFingers(frame) == numFingers) {
-            resolve(frame.hands[0]);
-        } else {
-            reject();
-        }
-    });
-}
-
-function zoomFunc(new_zoomFactor) {
-
-    chrome.tabs.getSelected(function (tab) {
-        chrome.tabs.getZoom(tab.id, function (zoomFactor) {
-            chrome.tabs.setZoom(tab.id, zoomFactor + new_zoomFactor, function (tab) {});
-        });
-    });
-}
+//function zoomFunc(new_zoomFactor) {
+//
+//    chrome.tabs.getSelected(function (tab) {
+//        chrome.tabs.getZoom(tab.id, function (zoomFactor) {
+//            chrome.tabs.setZoom(tab.id, zoomFactor + new_zoomFactor, function (tab) {});
+//        });
+//    });
+//}
 
 var actions = {
     zoom: {
@@ -184,7 +172,7 @@ var actions = {
     },
     newTab: {
         exec: function openNewTab() {
-            chrome.tabs.create({}, function () {});
+            openNewTabWith("about:blank");
         }
     },
     newTabWithUrl: {
