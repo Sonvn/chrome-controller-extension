@@ -4,70 +4,40 @@ chrome.extension.onMessage.addListener(function (request, sender, sendResponse) 
     return true;
 });
 
+var actionSwipe;
+
 var controller = new Leap.Controller({enableGestures: true})
-    .use('screenPosition', {
-        scale: 1
-    })
     .connect()
     .on('frame', function (frame) {
-
-        isChromeUrl()
-            .then(function (tab_id) {
-
-                actions.scroll.exec(frame, tab_id);
-                actions.zoom.exec(frame, tab_id);
-
-                if (frame.valid && frame.gestures.length > 0) {
-                    frame.gestures.forEach(function (gesture) {
-                        if (gesture.state == "stop" && frame.hands && frame.hands.length == 1) switch (gesture.type) {
-                            case "circle":
+        if (frame.valid && frame.gestures.length > 0) {
+            frame.gestures.forEach(function (gesture) {
+                if (gesture.state == "stop" && frame.hands && frame.hands.length == 1) switch (gesture.type) {
+                    case "swipe":
+                        var isHorizontal = Math.abs(gesture.direction[0]) > Math.abs(gesture.direction[1]);
+                        if (isHorizontal && getNumExtendedFingers(frame) == 1) {
+                            if (gesture.direction[0] > 0) {
+                                actionSwipe = actions.nextTab;
+                            } else {
+                                actionSwipe = actions.previousTab;
+                            }
+                        } else {
+                            if (gesture.direction[1] > 0) {
+                                actionSwipe = getNumExtendedFingers(frame) == 2 ? actions.newTab : null;
+                            } else {
                                 if (getNumExtendedFingers(frame) == 2) {
-                                    var clockwise = false;
-                                    var pointableID = gesture.pointableIds[0];
-                                    var direction = frame.pointable(pointableID).direction;
-                                    var dotProduct = Leap.vec3.dot(direction, gesture.normal);
-                                    if (dotProduct > 0 && getNumExtendedFingers(frame) == 1) {
-                                        actions.historyForward.exec();
-                                    } else {
-                                        actions.historyBack.exec();
-                                    }
-                                }
-                                break;
-                            case "keyTap":
-                                break;
-                            case "screenTap":
-                                break;
-                            case "swipe":
-                                var isHorizontal = Math.abs(gesture.direction[0]) > Math.abs(gesture.direction[1]);
-                                if (isHorizontal && getNumExtendedFingers(frame) == 1) {
-                                    if (gesture.direction[0] > 0) {
-                                        swipeDirection = "right";
-                                        actions.nextTab.exec();
-                                    } else {
-                                        swipeDirection = "left";
-                                        actions.previousTab.exec();
-                                    }
+                                    actionSwipe = actions.closeTab;
+                                } else if (getNumExtendedFingers(frame) == 3) {
+                                    actionSwipe = actions.reloadTab;
                                 } else {
-                                    if (gesture.direction[1] > 0) {
-                                        swipeDirection = "up";
-                                        getNumExtendedFingers(frame) == 2 ? actions.newTab.exec() : '';
-                                    } else {
-                                        swipeDirection = "down";
-                                        if (getNumExtendedFingers(frame) == 2) {
-                                            actions.closeTab.exec();
-                                        } else if (getNumExtendedFingers(frame) == 3) {
-                                            actions.reloadTab.exec();
-                                        }
-                                    }
+                                    actionSwipe = null
                                 }
-                                break;
-
-                            console.log(swipeDirection);
+                            }
                         }
-                    });
+                        throttle(function () {
+                            if(actionSwipe) actionSwipe();
+                        }, 1000)();
+                        break;
                 }
-            })
-            .catch(function () {
             });
-
+        }
     });

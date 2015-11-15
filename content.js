@@ -10,14 +10,6 @@ window.onload = function () {
     document.getElementsByTagName("BODY")[0].style.zoom = "100%";
 };
 
-chrome.extension.onMessage.addListener(function (message, sender, sendResponse) {
-    switch (message.type) {
-        case "zoom-page":
-            document.getElementsByTagName('BODY')[0].style.zoom = message.value;
-            break;
-    }
-});
-
 var $previousElem;
 
 function highlightLinkElem(pos) {
@@ -78,9 +70,10 @@ function update_fingers(scale, frame) {
             'opacity': '0.75'
         });
     }
-
     return pos;
 }
+
+var actionSwipe;
 
 var controller = new Leap.Controller({enableGestures: true})
     .use('screenPosition', {
@@ -88,29 +81,64 @@ var controller = new Leap.Controller({enableGestures: true})
     })
     .connect()
     .on('frame', function (frame) {
-        var scale = (frame.hands.length > 0 && frame.hands[0]._scaleFactor !== 'undefined') ? frame.hands[0]._scaleFactor : 1;
-        var pos = update_fingers(scale, frame);
-        highlightLinkElem(pos);
-
         var hand = frame.hands[0];
 
-        //if (hand && hand.middleFinger.extended
-        //    && !hand.thumb.extended
-        //    && !hand.indexFinger.extended
-        //    && !hand.ringFinger.extended
-        //    && !hand.pinky.extended) {
-        //    alert("FUCK YOU");
-        //}
-
-        if (frame.valid && frame.gestures.length > 0) {
-            frame.gestures.forEach(function (gesture) {
-                if (gesture.state == "stop" && frame.hands && frame.hands.length == 1) switch (gesture.type) {
-                    case "keyTap":
-                        console.log("FUCK HUY ");
-                        console.log(currentElem);
-                        if (currentElem) $(currentElem)[0].click();
-                        break;
-                }
-            });
+        actions.scroll(frame);
+        if (hand && !hand.indexFinger.extended) {
+            actions.zoom(frame);
         }
+
+        if (hand && hand.middleFinger.extended
+            && !hand.thumb.extended
+            && hand.indexFinger.extended
+            && !hand.ringFinger.extended
+            && !hand.pinky.extended) {
+            if (frame.valid && frame.gestures.length > 0) {
+                frame.gestures.forEach(function (gesture) {
+                    if (gesture.state == "stop" && frame.hands && frame.hands.length == 1) switch (gesture.type) {
+                        case "circle":
+                            if (getNumExtendedFingers(frame) == 2) {
+                                var clockwise = false;
+                                var pointableID = gesture.pointableIds[0];
+                                var direction = frame.pointable(pointableID).direction;
+                                var dotProduct = Leap.vec3.dot(direction, gesture.normal);
+                                if (dotProduct > 0) {
+                                    actionSwipe = actions.historyForward;
+                                } else {
+                                    actionSwipe = actions.historyBack;
+                                }
+                            }
+                            throttle(function () {
+                                if(actionSwipe) actionSwipe();
+                            }, 1000)();
+                            break;
+                    }
+                });
+            }
+        }
+
+        //TODO: enable this
+        if (hand && !hand.middleFinger.extended
+            && !hand.thumb.extended
+            && hand.indexFinger.extended
+            && !hand.ringFinger.extended
+            && !hand.pinky.extended) {
+            var scale = (frame.hands.length > 0 && frame.hands[0]._scaleFactor !== 'undefined') ? frame.hands[0]._scaleFactor : 1;
+            var pos = update_fingers(scale, frame);
+            highlightLinkElem(pos);
+
+            if (frame.valid && frame.gestures.length > 0) {
+                frame.gestures.forEach(function (gesture) {
+                    if (frame.hands && frame.hands.length == 1) switch (gesture.type) {
+                        case "keyTap":
+                            console.log("FUCK HUY ");
+                            console.log(currentElem);
+                            if (currentElem) $(currentElem)[0].click();
+                            break;
+                    }
+                });
+            }
+        }
+
+
     });
